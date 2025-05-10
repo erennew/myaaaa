@@ -16,3 +16,5 @@ torrentp==0.1.7
 git+https://github.com/kaif-00z/html-telegraph-poster
 uvloop
 pymongo==4.5.0
+lxml[html_clean]  # Install lxml with HTML cleaning features
+lxml_html_clean
