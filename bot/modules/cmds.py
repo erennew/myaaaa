@@ -108,7 +108,7 @@ async def add_task(client, message):
     
     Var.RSS_ITEMS.append(args[0])
     req_msg = await sendMessage(message, f"`Global Link Added Successfully!`\n\n    • **All Link(s) :** {', '.join(Var.RSS_ITEMS)[:-2]}")
-
+"""
 @bot.on_message(command('addtask') & private & user(Var.ADMINS))
 @new_task
 async def add_task(client, message):
@@ -157,7 +157,7 @@ async def remove_task(client, message):
     else:
         return await sendMessage(message, "<b>No Matching Task Found to Remove</b>")
 
-
+"""
 @bot.on_message(filters.command('add_fsub') & filters.private & filters.user(Var.ADMINS))
 async def add_forcesub(client: Client, message: Message):
     pro = await message.reply("<b><i>Processing....</i></b>", quote=True)
