@@ -39,7 +39,7 @@ class FFEncoder:
             async with aiopen(self.__prog_file, 'r+') as p:
                 text = await p.read()
             if text:
-                time_done = floor(int(t[-1]) / 1000000) if (t := findall("out_time_ms=(\d+)", text)) else 1
+                time_done = floor(int(t[-1]) / 1000000) if (t := findall(r"out_time_ms=(\d+)", text)) else 1
                 ensize = int(s[-1]) if (s := findall(r"total_size=(\d+)", text)) else 0
                 
                 diff = time() - self.__start_time
