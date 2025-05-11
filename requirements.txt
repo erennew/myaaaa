@@ -18,3 +18,4 @@ uvloop
 pymongo==4.5.0
 lxml[html_clean]  # Install lxml with HTML cleaning features
 lxml_html_clean
+flask
