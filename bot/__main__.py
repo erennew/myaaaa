@@ -3,6 +3,7 @@ from pyrogram import idle
 from pyrogram.filters import command, user
 from bot import bot, Var, bot_loop, sch, LOGS
 from bot.modules.up_posts import upcoming_animes
+from flask import Flask
 
 @bot.on_message(command('ping') & user(Var.ADMINS))
 async def ping(client, message):
@@ -24,6 +25,15 @@ async def main():
     LOGS.info('Bot stopping...')
     await bot.stop()
     LOGS.info('Bot stopped cleanly.')
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return 'Bot is running!'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8000)
 
 if __name__ == '__main__':
     try:
