@@ -1,4 +1,5 @@
 import asyncio
+import time
 from threading import Thread
 from flask import Flask
 from pyrogram import idle
@@ -7,10 +8,23 @@ from pyrogram.filters import command, user
 from bot import bot, Var, bot_loop, sch, LOGS
 from bot.modules.up_posts import upcoming_animes
 
-# Basic /ping command for testing
+# Track bot start time
+START_TIME = time.time()
+
+# Format uptime into human-readable string
+def get_uptime():
+    seconds = int(time.time() - START_TIME)
+    mins, secs = divmod(seconds, 60)
+    hrs, mins = divmod(mins, 60)
+    days, hrs = divmod(hrs, 24)
+    uptime = f"{days}d {hrs}h {mins}m {secs}s" if days else f"{hrs}h {mins}m {secs}s"
+    return uptime
+
+# Basic /ping command with uptime
 @bot.on_message(command('ping') & user(Var.ADMINS))
 async def ping(client, message):
-    await message.reply("<i>I'm alive and running!</i>")
+    uptime = get_uptime()
+    await message.reply(f"<i>I'm alive and running!\nUptime: <b>{uptime}</b></i>")
 
 # Flask webserver for health check
 app = Flask(__name__)
