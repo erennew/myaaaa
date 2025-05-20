@@ -19,17 +19,6 @@ from pyrogram.enums import ChatAction
 status_msg = None  # Before try block to avoid UnboundLocalError
 WAIT_MSG = "Please wait while we process your request..."
 
-from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from bot import bot, Var  # Make sure Var is correctly imported from your __init__.py or config
-from bot.helpers.decorators import new_task
-from bot.helpers.utils import sendMessage, editMessage
-from bot.helpers.fsub import is_fsubbed, get_fsubs
-from asyncio import sleep as asleep
-from bot.helpers.decode import decode  # if you have a decode function
-from bot.helpers.time import convertTime  # if you're using this
-import traceback
-
 
 @bot.on_message(filters.command('start') & filters.private)
 @new_task
