@@ -12,14 +12,15 @@ from .reporter import rep
 
 
 CAPTION_FORMAT = """
-<b>╭───❖ <i>{title}</i> ❖──╮</b>
+<b>🌟 <i>{title}</i> 🌟</b>
 
-<b>├・🌀</b> <i>Genres:</i>    <i>{genres}</i>
-<b>├・🎞️</b> <i>Episode:</i>   <code>{ep_no}</code>
-<b>╰・🔊</b> <i>Audio/Subs:</i> <code>Japanese | English</code>
+<b>🎬 Genres:</b> <i>{genres}</i>
+<b>🎥 Episode:</b> <code>{ep_no}</code>
+<b>🔊 Audio/Subs:</b> <code>Japanese | English</code>
 
-<blockquote>✦ <i>Powered By</i> {cred} ✦</blockquote>
+<blockquote>💫 <i>Powered by</i>: {cred} 💫</blockquote>
 """
+
 
 
 GENRES_EMOJI = {
