@@ -61,7 +61,7 @@ class Var:
     DEL_TIMER = int(getenv("DEL_TIMER", "600"))
     START_PHOTO = getenv("START_PHOTO", "https://te.legra.ph/file/120de4dbad87fb20ab862.jpg")
     #START_MSG = getenv("START_MSG", "<b>Hey {first_name}</b>,\n\n    <i>I am Auto Animes Store & Automater Encoder Build with ❤️ !!</i>")
-    START_MSG = getenv("START_MSG","<b>Hey {first_name}</b>,\n\n<i>🍼 Anya Reporting Sir..!! ❤️</i>\n\n🎬 <b>Mission Brief:</b>\nAnya tracks ongoing anime episodes like a true spy! 🕵️‍♀️✨\n\n<b>Let’s gooo!! 🚀</b>"
+    START_MSG = getenv("START_MSG","<b>Hey {first_name}</b>,\n\n<i>🍼 Anya Reporting Sir..!! ❤️</i>\n\n🎬 <b>Mission Brief:</b>\nAnya tracks ongoing anime episodes like a true spy! 🕵️‍♀️✨\n\n<b>Let’s gooo!! 🚀</b>")
 
     START_BUTTONS = getenv("START_BUTTONS", "UPDATES|https://telegram.me/Matiz_Tech SUPPORT|https://t.me/+p78fp4UzfNwzYzQ5")
 
