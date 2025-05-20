@@ -20,14 +20,15 @@ status_msg = None  # Before try block to avoid UnboundLocalError
 WAIT_MSG = "Please wait while we process your request..."
 
 
-@bot.on_message(filters.command('start') & filters.private)
+@bot.on_message(command('start') & private)
 @new_task
-async def start_msg(client, message):
+async def start_msg(client, message: Message):
     uid = message.from_user.id
     from_user = message.from_user
     txtargs = message.text.split()
     temp = await sendMessage(message, "<i>Connecting..</i>")
-    
+
+    # Force subscription check
     if not await is_fsubbed(uid):
         txt, btns = await get_fsubs(uid, txtargs)
         return await editMessage(temp, txt, InlineKeyboardMarkup(btns))
@@ -38,71 +39,72 @@ async def start_msg(client, message):
         for elem in Var.START_BUTTONS.split():
             try:
                 bt, link = elem.split('|', maxsplit=1)
+                if len(btns) != 0 and len(btns[-1]) == 1:
+                    btns[-1].insert(1, InlineKeyboardButton(bt, url=link))
+                else:
+                    btns.append([InlineKeyboardButton(bt, url=link)])
             except:
                 continue
-            if btns and len(btns[-1]) == 1:
-                btns[-1].insert(1, InlineKeyboardButton(bt, url=link))
-            else:
-                btns.append([InlineKeyboardButton(bt, url=link)])
 
         smsg = Var.START_MSG.format(
             first_name=from_user.first_name,
-            last_name=from_user.last_name or from_user.first_name,
+            last_name=from_user.last_name or "",
             mention=from_user.mention,
             user_id=from_user.id
         )
 
         if Var.START_PHOTO:
-            reply = await message.reply_photo(
+            await message.reply_photo(
                 photo=Var.START_PHOTO,
                 caption=smsg,
-                reply_markup=InlineKeyboardMarkup(btns) if btns else None
+                parse_mode=ParseMode.HTML,
+                reply_markup=InlineKeyboardMarkup(btns) if btns else None,
+                effect_id=5104841245755180584  # ❤️ Heart Explosion
             )
         else:
-            reply = await sendMessage(message, smsg, InlineKeyboardMarkup(btns) if btns else None)
-
-        # Send ❤️ Heart Explosion Effect
-        try:
-            await client.send_reaction(
-                chat_id=message.chat.id,
-                message_id=reply.id,
-                effect_id=5104841245755180584  # Heart explosion
+            await message.reply_text(
+                text=smsg,
+                parse_mode=ParseMode.HTML,
+                reply_markup=InlineKeyboardMarkup(btns) if btns else None,
+                effect_id=5104841245755180584  # ❤️ Heart Explosion
             )
-        except Exception as e:
-            print("Reaction effect failed:", e)
         return
 
-    # If /start has arguments (encoded message link)
     try:
         arg = (await decode(txtargs[1])).split('-')
     except Exception as e:
-        print("Decode failed:", traceback.format_exc())
-        return await editMessage(temp, "<b>Input Link Code Decode Failed!</b>")
+        await rep.report(f"User : {uid} | Error : {str(e)}", "error")
+        await editMessage(temp, "<b>Input Link Code Decode Failed !</b>")
+        return
 
     if len(arg) == 2 and arg[0] == 'get':
         try:
             fid = int(int(arg[1]) / abs(int(Var.FILE_STORE)))
         except Exception as e:
-            print("Invalid file id:", traceback.format_exc())
-            return await editMessage(temp, "<b>Input Link Code is Invalid!</b>")
-
+            await rep.report(f"User : {uid} | Error : {str(e)}", "error")
+            await editMessage(temp, "<b>Input Link Code is Invalid !</b>")
+            return
         try:
             msg = await client.get_messages(Var.FILE_STORE, message_ids=fid)
             if msg.empty:
-                return await editMessage(temp, "<b>File Not Found!</b>")
+                return await editMessage(temp, "<b>File Not Found !</b>")
             nmsg = await msg.copy(message.chat.id, reply_markup=None)
             await temp.delete()
             if Var.AUTO_DEL:
                 async def auto_del(msg, timer):
                     await asleep(timer)
                     await msg.delete()
-                await sendMessage(message, f'<i>File will be Auto Deleted in {convertTime(Var.DEL_TIMER)}. Forward it to Saved Messages now.</i>')
-                client.loop.create_task(auto_del(nmsg, Var.DEL_TIMER))
+                await sendMessage(
+                    message,
+                    f'<i>File will be Auto Deleted in {convertTime(Var.DEL_TIMER)}, Forward to Saved Messages Now..</i>'
+                )
+                bot_loop.create_task(auto_del(nmsg, Var.DEL_TIMER))
         except Exception as e:
-            print("Error sending file:", traceback.format_exc())
-            return await editMessage(temp, "<b>File Not Found!</b>")
+            await rep.report(f"User : {uid} | Error : {str(e)}", "error")
+            await editMessage(temp, "<b>File Not Found !</b>")
     else:
-        await editMessage(temp, "<b>Input Link is Invalid for Usage!</b>")
+        await editMessage(temp, "<b>Input Link is Invalid for Usage !</b>")
+
 
     
 @bot.on_message(command('pause') & private & user(Var.ADMINS))
