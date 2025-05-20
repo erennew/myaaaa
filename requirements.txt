@@ -1,4 +1,4 @@
-pyrogram==2.0.106
+#https://codeload.github.com/KurimuzonAkuma/pyrogram/zip/refs/heads/dev
 aiohttp
 aioshutil
 aiofiles
