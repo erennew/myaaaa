@@ -1,10 +1,10 @@
 import logging
 import asyncio
+import random
 from json import loads as jloads
 from aiohttp import ClientSession, ClientTimeout
 from pyrogram.enums import ParseMode
-from os import path as ospath
-
+from textwrap import shorten
 from bot import Var, bot, ffQueue
 from bot.core.text_utils import TextEditor
 from bot.core.reporter import rep
@@ -18,43 +18,53 @@ logging.basicConfig(
 
 TD_SCHR = None  # Global variable for schedule message
 
+# Style configuration
+NETWORK_TEXT = "<a href='https://t.me/addlist/rs4XTtqqm9I4MTQ1'>📡 CTW</a>"
+ANIME_MEDIA_LINKS = [
+    "CgACAgUAAxkBAAIsL2gwv1J7b1KLUFsqaa3_RyU5wwQqAAJVGAACjV1wV40wzQ_UfohGHgQ",
+    "https://i.ibb.co/gMs2DG6C/x.jpg",
+    "https://i.ibb.co/F4ytZfyG/x.jpg"
+]
+
 async def fetch_schedule_with_retry(max_retries=3):
-    """Fetch schedule from API with proper content-type handling"""
+    """Fetch schedule from API"""
     url = "https://subsplease.org/api/?f=schedule&h=true&tz=Asia/Kolkata"
-    headers = {
-        'User-Agent': 'Mozilla/5.0',
-        'Accept': 'application/json'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json'}
     
     for attempt in range(max_retries):
         try:
             async with ClientSession(timeout=ClientTimeout(total=10)) as session:
                 async with session.get(url, headers=headers) as response:
-                    LOGS.info(f"Attempt {attempt+1}: Status {response.status}")
-                    
                     if response.status != 200:
                         raise Exception(f"HTTP {response.status}")
-                        
-                    content = await response.text()
-                    
-                    try:
-                        data = jloads(content)
-                        if not data or not isinstance(data.get('schedule'), list):
-                            raise Exception("Invalid schedule data format")
-                            
-                        LOGS.info(f"Successfully parsed {len(data['schedule'])} shows")
-                        return data
-                        
-                    except ValueError as e:
-                        raise Exception(f"Invalid JSON: {str(e)}. Content: {content[:200]}...")
-                    
+                    data = jloads(await response.text())
+                    if not data or not isinstance(data.get('schedule'), list):
+                        raise Exception("Invalid schedule data format")
+                    return data
         except Exception as e:
-            LOGS.warning(f"Attempt {attempt+1} failed: {str(e)}")
             if attempt == max_retries - 1:
-                LOGS.error("All retries exhausted")
                 raise Exception(f"Failed after {max_retries} attempts: {str(e)}")
             await asyncio.sleep(2 ** attempt)
 
+def get_current_style():
+    """Returns a consistent style for the entire post"""
+    styles = [
+        # Clean style with icons
+        lambda title, time, score: f"""
+<b>• {title}</b>
+<code>  ⏱ {time}  ⭐ {score}</code>""",
+        
+        # Minimalist style
+        lambda title, time, score: f"""
+<b>{title}</b>
+<code>{time} • {score}/100</code>""",
+        
+        # Premium compact style
+        lambda title, time, score: f"""
+<b>▸ {title}</b>
+<code>  {time}  ◈ {score}</code>"""
+    ]
+    return random.choice(styles)
 
 async def upcoming_animes():
     """Post today's anime schedule with clean formatting"""
@@ -72,6 +82,9 @@ async def upcoming_animes():
             LOGS.error("Invalid schedule data received")
             raise Exception("Invalid schedule data")
 
+        # Select one random style for entire post
+        current_style = get_current_style()
+
         # Prepare the message
         header = """
 <b>🌸 𝗔𝗡𝗜𝗠𝗘 𝗦𝗖𝗛𝗘𝗗𝗨𝗟𝗘 🌸</b>
@@ -86,15 +99,12 @@ async def upcoming_animes():
                 editor = TextEditor(anime["title"])
                 await editor.load_anilist()
                 data = editor.adata
-                
                 title = data.get('title', {}).get('english') or anime['title']
                 score = data.get('averageScore', 'N/A')
                 
-                entry = f"""
-<b>🎬 {title}</b>
-<blockquote>🕒 {anime['time']}  •  ⭐ {score}/100</blockquote>
-"""
-                anime_entries.append(entry)
+                anime_entries.append(current_style(
+                    title, anime['time'], score
+                ))
 
             except Exception as e:
                 LOGS.error(f"Error processing anime {anime['title']}: {str(e)}")
@@ -104,36 +114,56 @@ async def upcoming_animes():
         footer = f"""
 <code>──────────────────────</code>
 <b>🌠 {total_anime} releases today</b>
+{NETWORK_TEXT}
 """
         message_text = header + "\n".join(anime_entries) + footer
 
-        # Send or update the message
+        # Send with media or text
+        if ANIME_MEDIA_LINKS:
+            media_url = random.choice(ANIME_MEDIA_LINKS)
+            try:
+                if media_url.lower().endswith('.gif'):
+                    TD_SCHR = await bot.send_animation(
+                        chat_id=Var.MAIN_CHANNEL,
+                        animation=media_url,
+                        caption=message_text,
+                        parse_mode=ParseMode.HTML
+                    )
+                else:
+                    TD_SCHR = await bot.send_photo(
+                        chat_id=Var.MAIN_CHANNEL,
+                        photo=media_url,
+                        caption=message_text,
+                        parse_mode=ParseMode.HTML
+                    )
+                await TD_SCHR.pin(disable_notification=True)
+                return
+            except Exception as e:
+                LOGS.error(f"Media failed: {str(e)}")
+
+        # Text fallback
         if TD_SCHR:
             try:
-                LOGS.info("Editing existing schedule message")
                 await TD_SCHR.edit_text(
                     message_text,
                     disable_web_page_preview=True,
                     parse_mode=ParseMode.HTML
                 )
             except Exception as e:
-                LOGS.warning(f"Failed to edit message: {str(e)}, sending new one")
                 TD_SCHR = await bot.send_message(
                     Var.MAIN_CHANNEL,
                     message_text,
                     disable_web_page_preview=True,
                     parse_mode=ParseMode.HTML
                 )
-                await TD_SCHR.pin(disable_notification=True)
         else:
-            LOGS.info("Posting new schedule message")
             TD_SCHR = await bot.send_message(
                 Var.MAIN_CHANNEL,
                 message_text,
                 disable_web_page_preview=True,
                 parse_mode=ParseMode.HTML
             )
-            await TD_SCHR.pin(disable_notification=True)
+        await TD_SCHR.pin(disable_notification=True)
 
         LOGS.info("Schedule update completed successfully")
 
@@ -153,7 +183,7 @@ async def update_shdr(name, link):
             
             for i, line in enumerate(lines):
                 if name in line:
-                    lines.insert(i + 2, f"    • **Status :** ✅ __Uploaded__\n    • **Link :** {link}")
+                    lines.insert(i + 2, f"    • <b>Status:</b> ✅ Uploaded\n    • <b>Link:</b> {link}")
                     break
             
             await TD_SCHR.edit_text("\n".join(lines))
