@@ -21,9 +21,15 @@ TD_SCHR = None  # Global variable for schedule message
 # Style configuration
 NETWORK_TEXT = "<a href='https://t.me/addlist/rs4XTtqqm9I4MTQ1'>📡 CTW</a>"
 ANIME_MEDIA_LINKS = [
-    "CgACAgUAAxkBAAIsL2gwv1J7b1KLUFsqaa3_RyU5wwQqAAJVGAACjV1wV40wzQ_UfohGHgQ",
+    "https://t.me/c/1333766434/1254",
     "https://i.ibb.co/gMs2DG6C/x.jpg",
-    "https://i.ibb.co/F4ytZfyG/x.jpg"
+    "https://i.ibb.co/F4ytZfyG/x.jpg",
+    "https://i.ibb.co/N6rTvZXG/x.jpg",
+    "https://i.ibb.co/bjGvJ7fL/x.jpg",
+    "https://i.ibb.co/pB8SMVfz/x.png",
+    "https://i.ibb.co/pB8SMVfz/x.png"
+
+
 ]
 
 async def fetch_schedule_with_retry(max_retries=3):
@@ -49,20 +55,87 @@ async def fetch_schedule_with_retry(max_retries=3):
 def get_current_style():
     """Returns a consistent style for the entire post"""
     styles = [
-        # Clean style with icons
+        # 1. Modern Card Style
         lambda title, time, score: f"""
-<b>• {title}</b>
-<code>  ⏱ {time}  ⭐ {score}</code>""",
-        
-        # Minimalist style
+🟢 <b>{title}</b>
+⏳ <code>{time}</code> | ⭐ <code>{score}/10</code>
+━━━━━━━━━━━━""",
+
+        # 2. Bubble Chat Style
         lambda title, time, score: f"""
-<b>{title}</b>
-<code>{time} • {score}/100</code>""",
-        
-        # Premium compact style
+💬 <b>{title.upper()}</b>
+🕒 <code>{time}</code> | 💯 <code>{score}%</code>
+──────────────────""",
+
+        # 3. Minimalist Divider
+        lambda title, time, score: f"""
+<b>┌ {title}</b>
+<code>├ {time}
+└ ★ {score}</code>""",
+
+        # 4. App Notification Style
+        lambda title, time, score: f"""
+📱 <b>{title}</b>
+<code>🕓 {time}  |  🔥 {score} Rating</code>
+──────────────────""",
+
+        # 6. Compact List Style
+        lambda title, time, score: f"""
+<b>• {title[:24]}...</b>
+<code>  🕑 {time}  |  ⭐ {score}</code>""",
+
+        # 7. Highlight Badge Style
+        lambda title, time, score: f"""
+<b>🟣 {title}</b>
+<code>   ⏱️ {time}  |  🏆 {score} pts</code>
+──────────────""",
+
+        # 8. Dual Column Layout
+        lambda title, time, score: f"""
+<b>┏ Title: {title}</b>
+<code>┣ Time: {time}
+┗ Score: {score}/100</code>""",
+
+        # 9. Social Media Style
+        lambda title, time, score: f"""
+📌 <b>{title}</b>
+<code>⏰ {time}  •  👍 {score}%</code>
+──────────────────""",
+
+        # 10. Premium Glassmorphism
+        lambda title, time, score: f"""
+<b>◈ {title}</b>
+<code>  ✦ {time}  ✦ {score}%</code>
+══════════════""",
+
+        # 11. iOS Notification
+        lambda title, time, score: f"""
+📲 <b>{title}</b>
+<code>   {time}  •  ⭐️ {score}</code>
+──────────────────""",
+
+        # 12. Android Toast
+        lambda title, time, score: f"""
+<b>🟢 {title}</b>
+<code>   🕓 {time}  ◈ {score}</code>
+──────────────""",
+
+        # 13. Dark Mode Optimized
+        lambda title, time, score: f"""
+<b>🌙 {title}</b>
+<code>   ⏳ {time}  ✨ {score}</code>
+──────────────────""",
+
+        # 14. Compact Card
+        lambda title, time, score: f"""
+<b>▍ {title}</b>
+<code>  {time}  ▎ {score}/10</code>""",
+
+        # 15. Modern Dashboard
         lambda title, time, score: f"""
 <b>▸ {title}</b>
-<code>  {time}  ◈ {score}</code>"""
+<code>   {time}  •  {score}%</code>
+──────────────────"""
     ]
     return random.choice(styles)
 
@@ -191,4 +264,4 @@ async def update_shdr(name, link):
             
         except Exception as e:
             LOGS.error(f"Failed to update schedule: {str(e)}")
-            raise
+            raises
