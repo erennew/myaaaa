@@ -20,51 +20,22 @@ ffargs = {
 }
 
 class AnimeProgress:
-    """Mobile-friendly anime progress bars (8-12 segments)"""
+    """Geometric progress bars guaranteed to work in Telegram"""
     STYLES = {
-        # Shonen (8 segments)
-        'jjk': lambda p: f"🟣 {'■'*int(p/12)}{'□'*(10-int(p/12))} {p}% Domain",
-        'chainsaw': lambda p: f"🔴 {'⛓️'*int(p/12)}{' '*(10-int(p/12))} {p}% Rev!",
-        'demonslayer': lambda p: f"🔥 {'卍'*int(p/12)}{' '*(10-int(p/12))} {p}% Kagura",
-        'onepiece': lambda p: f"🏴‍☠️ {'💎'*int(p/12)}{' '*(10-int(p/12))} {p}% Luffy!",
-        'naruto': lambda p: f"🌀 {'忍'*int(p/12)}{' '*(9-int(p/12))} {p}% Dattebayo",
+        #─── Core Geometric ───
+        'dotted': lambda p: f"│{'⬤' * int(p//10)}{'○' * (10 - int(p//10))}│ {p}%",
+        'hexagon': lambda p: f"│{'⬡' * int(p//10)}{'⬢' * (10 - int(p//10))}│ {p}%",
+        'wave': lambda p: f"│{'〰' * int(p//10)}{' ' * (10 - int(p//10))}│ {p}%",
         
-        # Modern (8 segments)
-        'sololeveling': lambda p: f"👑 {'♠'*int(p/12)}{'♣'*(10-int(p/12))} {p}% Monarch",
-        'spyxfamily': lambda p: f"🕵️ {'✓'*int(p/12)}{' '*(10-int(p/12))} {p}% Spy!",
-        'mha': lambda p: f"💥 {'!'*int(p/12)}{'.'*(11-int(p/12))} {p}% SMASH",
-        'tokyorevengers': lambda p: f"🚬 {'💢'*int(p/12)}{' '*(10-int(p/12))} {p}% Leap",
-        'aot': lambda p: f"⚔️ {'◼'*int(p/12)}{'◻'*(10-int(p/12))} {p}% Rumble",
+        #─── Premium Geometric ───
+        'stars': lambda p: f"│{'✧' * int(p//10)}{' ' * (10 - int(p//10))}│ {p}%",
+        'arrows': lambda p: f"│{'▶' * int(p//10)}{' ' * (10 - int(p//10))}│ {p}%",
+        'holy': lambda p: f"⫷{'✧' * int(p//10)}{'✺' * (10 - int(p//10))}⫸ {p}%",
         
-        # Classic (6 segments)
-        'dbz': lambda p: f"⚡ {'💢'*int(p/16)}{' '*(10-int(p/16))} {p}% POWER!",
-        'bleach': lambda p: f"🗡️ {'卍'*int(p/16)}{' '*(10-int(p/16))} {p}% Bankai",
-        'hunter': lambda p: f"✨ {'☁'*int(p/16)}{'🌀'*(10-int(p/16))} {p}% Nen",  # 2-3 swirls max
-        'onepunch': lambda p: f"👊 {'💥'*int(p/16)}{' '*(10-int(p/16))} {p}% OK.",
-        'deathnote': lambda p: f"📓 {'⌛'*int(p/16)}{' '*(10-int(p/16))} {p}% Note",
-        
-        # Cyberpunk/Seinen (8 segments)
-        'cyberpunk': lambda p: f"⏣ {'▞'*int(p/12)}{'▚'*(10-int(p/12))} {p}% CHOOM",
-        'berserk': lambda p: f"✠ {'血'*int(p/16)}{' '*(10-int(p/16))} {p}% Clang",
-        'evangelion': lambda p: f"✝️ {'▰'*int(p/12)}{'▱'*(10-int(p/12))} {p}% Sync",
-        'ghostshell': lambda p: f"📡 {'⌖'*int(p/12)}{' '*(10-int(p/12))} {p}% Hack",
-        'trigun': lambda p: f"🔫 {'✳'*int(p/12)}{' '*(10-int(p/12))} {p}% $$60B",
-        
-        # Retro (6 segments)
-        'cowboybebop': lambda p: f"🎵 {'♫'*int(p/16)}{' '*(10-int(p/16))} {p}% Cowboy",
-        'akira': lambda p: f"🔴 {'㊗'*int(p/16)}{' '*(10-int(p/16))} {p}% Tetsuo!",
-        'gundam': lambda p: f"⚙️ {'✧'*int(p/16)}{' '*(10-int(p/16))} {p}% Newtype",
-        'sailormoon': lambda p: f"🌙 {'✨'*int(p/16)}{' '*(10-int(p/16))} {p}% Prism",
-        'dragonball': lambda p: f"🐉 {'☄'*int(p/16)}{' '*(10-int(p/16))} {p}% Kame!",
-        
-        # Hybrid (8 segments)
-        'jjk_chainsaw': lambda p: f"🟣🔴 {'■⛓️'*int(p/24)}{'  '*(10-int(p/24))} {p}% Domain",
-        'demon_bleach': lambda p: f"🔥🗡️ {'卍卍'*int(p/24)}{'  '*(10-int(p/24))} {p}% Bankai",
-        'cyber_bebop': lambda p: f"⏣🎵 {'▞♫'*int(p/24)}{'  '*(10-int(p/24))} {p}% Bebop",
-        'retro_modern': lambda p: f"🌀✨ {'忍☁'*int(p/24)}{'  '*(10-int(p/24))} {p}% Mix",
-        'ultimate': lambda p: f"💥👊 {'!💢'*int(p/24)}{'  '*(10-int(p/24))} {p}% MAX"
+        #─── Ultra Clean ───
+        'minimal': lambda p: f"│{'▮' * int(p//10)}{'▯' * (10 - int(p//10))}│ {p}%",
+        'brackets': lambda p: f"◈{'■' * int(p//10)}{' ' * (10 - int(p//10))}◈ {p}%"
     }
-
 
     @classmethod
     def get_random_style(cls):
