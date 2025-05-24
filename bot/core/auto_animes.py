@@ -52,11 +52,19 @@ async def get_animes(name, torrent, force=False):
                 return
             
             await rep.report(f"New Anime Torrent Found!\n\n{name}", "info")
+
             post_msg = await bot.send_photo(
                 Var.MAIN_CHANNEL,
                 photo=await aniInfo.get_poster(),
                 caption=await aniInfo.get_caption()
             )
+
+            # ✅ Send sticker after sending the photo
+            await bot.send_sticker(
+                chat_id=Var.MAIN_CHANNEL,
+                sticker="CAACAgUAAxkBAAItdGgx6eN5E6rd2hgjbdpSOlfi_-tOAAI-AANDc8kSMh37AsG_DNYeBA"  # Replace with your own sticker's file_id
+            )
+
             #post_msg = await sendMessage(Var.MAIN_CHANNEL, (await aniInfo.get_caption()).format(await aniInfo.get_poster()), invert_media=True)
             
             await asleep(1.5)
@@ -109,9 +117,9 @@ async def get_animes(name, torrent, force=False):
                 
                 if post_msg:
                     if len(btns) != 0 and len(btns[-1]) == 1:
-                        btns[-1].insert(1, InlineKeyboardButton(f"{btn_formatter[qual]} ", url=link))
+                        btns[-1].insert(1, InlineKeyboardButton(f"{btn_formatter[qual]}", url=link))
                     else:
-                        btns.append([InlineKeyboardButton(f"{btn_formatter[qual]} ", url=link)])
+                        btns.append([InlineKeyboardButton(f"{btn_formatter[qual]}", url=link)])
                     await editMessage(post_msg, post_msg.caption.html if post_msg.caption else "", InlineKeyboardMarkup(btns))
                     
                 await db.saveAnime(ani_id, ep_no, qual, post_id)
