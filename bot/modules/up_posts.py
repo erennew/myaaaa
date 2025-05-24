@@ -19,7 +19,7 @@ logging.basicConfig(
 TD_SCHR = None  # Global variable for schedule message
 
 # Style configuration
-NETWORK_TEXT = "<a href='https://t.me/addlist/rs4XTtqqm9I4MTQ1'>📡 CTW</a>"
+NETWORK_TEXT = "<a href='https://t.me/OngoingCTW'>📡 CTW</a>"
 ANIME_MEDIA_LINKS = [
     "https://t.me/c/1333766434/1254",
     "https://i.ibb.co/gMs2DG6C/x.jpg",
