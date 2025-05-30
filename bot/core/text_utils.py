@@ -14,9 +14,8 @@ from .reporter import rep
 CAPTION_FORMAT = """
 <b>🌟 <i>{title}</i> 🌟</b>
 
-<b>🎬 Genres:</b> <i>{genres}</i>
-<b>🎥 Episode:</b> <code>{ep_no}</code>
-<b>🔊 Audio/Subs:</b> <code>Japanese | English</code>
+<b>┃ ⫸ Episode:</b> <code>{ep_no}</code>
+<b>┃ ⫸ Audio/Subs:</b> <code>Japanese | English</code>
 
 <blockquote>💫 <i>Powered by</i>: {cred} 💫</blockquote>
 """
