@@ -37,7 +37,7 @@ class AnimeProgress:
         'brackets': lambda p: f"◈{'■' * int(p//10)}{' ' * (10 - int(p//10))}◈ {p}%"
     }
 
-    @classmethod
+   @classmethod
     def get_random_style(cls):
         """Get a random anime style key"""
         return random.choice(list(cls.STYLES.keys()))
@@ -46,7 +46,7 @@ class AnimeProgress:
     def get_progress(cls, percent: float, style: str = None):
         """Generate progress bar in specified style"""
         style = style or cls.get_random_style()
-        generator = cls.STYLES.get(style, cls.STYLES['jjk'])
+        generator = cls.STYLES.get(style, cls.STYLES['default'])  # ✅ safe fallback
         return generator(min(100, max(0, percent)))
 
 class FFEncoder:
